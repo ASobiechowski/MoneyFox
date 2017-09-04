@@ -35,8 +35,8 @@ namespace MoneyFox.DataAccess.Infrastructure
             if (dbContext == null)
             {
                 dbContext = new ApplicationContext();
+                await dbContext.Database.MigrateAsync();
             }
-            await dbContext.Database.MigrateAsync();
             return dbContext;
         }
 
@@ -98,7 +98,7 @@ namespace MoneyFox.DataAccess.Infrastructure
                         EndDate = recPayment.EndDate,
                         Amount = recPayment.Amount,
                         Type = (PaymentType)recPayment.Type,
-                        Recurrence = (PaymentRecurrence)recPayment.Type,
+                        Recurrence = (PaymentRecurrence)recPayment.Recurrence,
                         IsEndless = recPayment.IsEndless,
                         Note = recPayment.Note,
                     });
@@ -139,13 +139,11 @@ namespace MoneyFox.DataAccess.Infrastructure
                 await dbContext.SaveChangesAsync();
             }
         }
-
-        /// <summary>
-        ///     Dispose the current DbFactory
-        /// </summary>
+        /// <inheritdoc />
         protected override void DisposeCore()
         {
             dbContext?.Dispose();
+            dbContext = null;
         }
     }
 }
